@@ -1,0 +1,75 @@
+# Visual Studio / Rider
+.vscode/
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+out/
+
+# Arquivos de pacotes
+*.nupkg
+*.snupkg
+
+# Diretórios de publicação
+publish/
+publish_output/
+
+# Arquivos gerados pelo Rider
+*.DotSettings.user
+
+# Arquivos temporários
+*.log
+*.vspscc
+*.vssscc
+
+# Arquivos de cache
+*.dbmdl
+*.cache
+*.bak
+*.backup
+
+# Diretórios do sistema
+_ReSharper*/
+_ReSharper*/
+*.ReSharper.*
+
+# Configurações do IIS Express
+/.vs/
+
+# Docker
+**/docker-compose.override.yml
+**/docker-compose.override.yml.*
+
+# ASP.NET Core
+# appsettings.*.json
+
+# Arquivos do Entity Framework
+# Migrations/
+
+# User secrets
+secrets.json
+
+# Configuração do npm / node (se usar frontend)
+node_modules/
+
+# Arquivos gerados pelo npm
+package-lock.json
+yarn.lock
+
+# Log do sistema e arquivos temporários do sistema
+*.pid
+*.seed
+*.pid.lock
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
