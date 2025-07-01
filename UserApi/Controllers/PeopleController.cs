@@ -23,8 +23,8 @@ public class PeopleController : ControllerBase
 
         try
         {
-            var created = await _personService.CreatePersonAsync(personCreateRequest);
-            return CreatedAtAction(nameof(GetPersonById), new { id = created.Id }, created);
+            var createdId = await _personService.CreatePersonAsync(personCreateRequest);
+            return Created(string.Empty, new { Id = createdId });
         }
         catch (InvalidOperationException ex)
         {

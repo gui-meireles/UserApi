@@ -14,7 +14,7 @@ public class PersonService : IPersonService
         _repository = repository;
     }
 
-    public async Task<PersonResponse> CreatePersonAsync(PersonCreateRequest request)
+    public async Task<int> CreatePersonAsync(PersonCreateRequest request)
     {
         var person = request.ToPerson();
 
@@ -23,8 +23,8 @@ public class PersonService : IPersonService
         if (existingEmail != null)
             throw new InvalidOperationException("Email already in use.");
 
-        var created = await _repository.CreatePersonAsync(person);
-        return created.ToPersonResponse();
+        var createdId = await _repository.CreatePersonAsync(person);
+        return createdId;
     }
 
     public async Task<PersonResponse> GetPersonByIdAsync(int id)

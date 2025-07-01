@@ -18,7 +18,7 @@ public class PersonRepository : IPersonRepository
     
     private NpgsqlConnection GetConnection() => new NpgsqlConnection(_connectionString);
 
-    public async Task<Person> CreatePersonAsync(Person person)
+    public async Task<int> CreatePersonAsync(Person person)
     {
         await using var connection = GetConnection();
 
@@ -26,8 +26,7 @@ public class PersonRepository : IPersonRepository
         ("INSERT INTO person (name, email, created_at, active) VALUES (@Name, @Email, @CreatedAt, @Active);select lastval();",
             person);
 
-        person.Id = createdId;
-        return person;
+        return createdId;
     }
 
     public async Task<Person> UpdatePersonAsync(Person person)

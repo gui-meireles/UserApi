@@ -4,7 +4,7 @@ namespace UserApi.Repository;
 
 public interface IPersonRepository
 {
-    Task<Person> CreatePersonAsync(Person person);
+    Task<int> CreatePersonAsync(Person person);
     Task<Person> UpdatePersonAsync(Person person);
     Task DeletePersonAsync(int id);
     Task<IEnumerable<Person>> GetAllPersonActiveAsync();
