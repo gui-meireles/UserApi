@@ -19,6 +19,13 @@ builder.Services.AddScoped<IPersonService, PersonService>();
 
 var app = builder.Build();
 
+// Aplica as migrations pendentes no banco
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<PersonContext>();
+    db.Database.Migrate();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
