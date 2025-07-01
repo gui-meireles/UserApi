@@ -17,7 +17,7 @@ public class Person
     public string Email { get; set; } = string.Empty;
     
     [Column("created_at")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
     
     [Column("active")]
     public bool IsActive { get; set; }
