@@ -11,7 +11,7 @@ public static class PersonMapper
         {
             Name = personCreateRequest.Name,
             Email = personCreateRequest.Email,
-            IsActive = true
+            Active = true
         };
     }
     

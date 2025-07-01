@@ -20,5 +20,5 @@ public class Person
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
     
     [Column("active")]
-    public bool IsActive { get; set; }
+    public bool Active { get; set; }
 }

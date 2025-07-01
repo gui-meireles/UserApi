@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UserApi.Mappers;
 using UserApi.Models.DTO;
-using UserApi.Repository;
+using UserApi.Services;
 
 namespace UserApi.Controllers;
 
@@ -9,11 +8,11 @@ namespace UserApi.Controllers;
 [ApiController]
 public class PeopleController : ControllerBase
 {
-    private readonly IPersonRepository _repository;
+    private readonly IPersonService _personService;
 
-    public PeopleController(IPersonRepository repository)
+    public PeopleController(IPersonService personService)
     {
-        _repository = repository;
+        _personService = personService;
     }
 
     [HttpPost]
@@ -22,12 +21,10 @@ public class PeopleController : ControllerBase
         if (personCreateRequest == null)
             return BadRequest("Person data is null.");
 
-        var person = personCreateRequest.ToPerson();
-
         try
         {
-            var personCreated = await _repository.CreatePersonAsync(person);
-            return CreatedAtAction(nameof(GetPersonById), new { id = personCreated.Id }, personCreated);
+            var created = await _personService.CreatePersonAsync(personCreateRequest);
+            return CreatedAtAction(nameof(GetPersonById), new { id = created.Id }, created);
         }
         catch (Exception ex)
         {
@@ -40,12 +37,12 @@ public class PeopleController : ControllerBase
     {
         try
         {
-            var person = await _repository.GetPersonByIdAsync(id);
+            var person = await _personService.GetPersonByIdAsync(id);
 
             if (person == null)
                 return NotFound(new { Message = $"Person not found with id {id}" });
 
-            return Ok(person.ToPersonResponse());
+            return Ok(person);
         }
         catch (Exception ex)
         {
@@ -58,14 +55,11 @@ public class PeopleController : ControllerBase
     {
         try
         {
-            var existingPerson = await _repository.GetPersonByIdAsync(id);
+            var existingPerson = await _personService.UpdatePersonAsync(id, personUpdateRequest);
 
-            if (existingPerson == null)
+            if (!existingPerson)
                 return NotFound(new { Message = $"Person not found with id {id}" });
 
-            var personToUpdate = personUpdateRequest.ToPerson(id);
-
-            await _repository.UpdatePersonAsync(personToUpdate);
             return NoContent();
         }
         catch (Exception ex)
@@ -79,12 +73,11 @@ public class PeopleController : ControllerBase
     {
         try
         {
-            var existingPerson = await _repository.GetPersonByIdAsync(id);
+            var existingPerson = await _personService.DeletePersonAsync(id);
 
-            if (existingPerson == null)
+            if (!existingPerson)
                 return NotFound(new { Message = $"Person not found with id {id}" });
 
-            await _repository.DeletePersonAsync(id);
             return NoContent();
         }
         catch (Exception ex)
@@ -98,11 +91,9 @@ public class PeopleController : ControllerBase
     {
         try
         {
-            var people = await _repository.GetAllPersonsAsync();
+            var people = await _personService.GetAllPeopleAsync();
 
-            var peopleResponse = people.Select(p => p.ToPersonResponse());
-            
-            return Ok(peopleResponse);
+            return Ok(people);
         }
         catch (Exception ex)
         {

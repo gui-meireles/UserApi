@@ -6,7 +6,7 @@ namespace UserApi.Repository;
 
 public class PersonRepository : IPersonRepository
 {
-    private readonly string _connectionString = "";
+    private readonly string _connectionString;
 
     private readonly IConfiguration _config;
 
@@ -21,7 +21,8 @@ public class PersonRepository : IPersonRepository
         await using var connection = new NpgsqlConnection(_connectionString);
 
         var createdId = await connection.ExecuteScalarAsync<int>
-            ("INSERT INTO person (name, email, created_at, active) VALUES (@Name, @Email, @CreatedAt, @IsActive);select lastval();", person);
+        ("INSERT INTO person (name, email, created_at, active) VALUES (@Name, @Email, @CreatedAt, @Active);select lastval();",
+            person);
 
         person.Id = createdId;
         return person;
@@ -30,7 +31,7 @@ public class PersonRepository : IPersonRepository
     public async Task<Person> UpdatePersonAsync(Person person)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
-        
+
         await connection.ExecuteAsync("UPDATE person SET name = @name, email = @email WHERE id = @id", person);
         return person;
     }
@@ -41,15 +42,16 @@ public class PersonRepository : IPersonRepository
         await connection.ExecuteAsync("UPDATE person SET active = FALSE WHERE id = @id", new { id });
     }
 
-    public async Task<IEnumerable<Person>> GetAllPersonsAsync()
+    public async Task<IEnumerable<Person>> GetAllPersonActiveAsync()
     {
         await using var connection = new NpgsqlConnection(_connectionString);
-        return await connection.QueryAsync<Person>("SELECT * FROM person WHERE active = TRUE");
+        return await connection.QueryAsync<Person>("SELECT * FROM person");
     }
 
     public async Task<Person> GetPersonByIdAsync(int id)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
-        return await connection.QueryFirstOrDefaultAsync<Person>("SELECT * FROM person WHERE id = @id", new { id });
+        return await connection.QueryFirstOrDefaultAsync<Person>(
+            "SELECT * FROM person WHERE id = @id", new { id });
     }
 }
