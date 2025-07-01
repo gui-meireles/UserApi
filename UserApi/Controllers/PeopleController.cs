@@ -26,6 +26,10 @@ public class PeopleController : ControllerBase
             var created = await _personService.CreatePersonAsync(personCreateRequest);
             return CreatedAtAction(nameof(GetPersonById), new { id = created.Id }, created);
         }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(422, ex.Message);
+        }
         catch (Exception ex)
         {
             return StatusCode(500, $"Internal server error: {ex.Message}");
@@ -61,6 +65,10 @@ public class PeopleController : ControllerBase
                 return NotFound(new { Message = $"Person not found with id {id}" });
 
             return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(422, ex.Message);
         }
         catch (Exception ex)
         {

@@ -9,4 +9,5 @@ public interface IPersonRepository
     Task DeletePersonAsync(int id);
     Task<IEnumerable<Person>> GetAllPersonActiveAsync();
     Task<Person> GetPersonByIdAsync(int id);
+    Task<Person> GetPersonByEmailAndActiveAsync(string email);
 }
