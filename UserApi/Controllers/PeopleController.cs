@@ -43,10 +43,9 @@ public class PeopleController : ControllerBase
         {
             var person = await _personService.GetPersonByIdAsync(id);
 
-            if (person == null)
-                return NotFound(new { Message = $"Person not found with id {id}" });
-
-            return Ok(person);
+            return person is null
+                ? NotFound(new { Message = $"Person not found with id {id}" })
+                : Ok(person);
         }
         catch (Exception ex)
         {

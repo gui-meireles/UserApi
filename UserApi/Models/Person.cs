@@ -18,7 +18,7 @@ public class Person
     
     [Column("created_at")]
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
-    
+
     [Column("active")]
-    public bool Active { get; set; }
+    public bool Active { get; init; } = true;
 }

@@ -10,8 +10,7 @@ public static class PersonMapper
         return new Person
         {
             Name = personCreateRequest.Name,
-            Email = personCreateRequest.Email,
-            Active = true
+            Email = personCreateRequest.Email
         };
     }
     
