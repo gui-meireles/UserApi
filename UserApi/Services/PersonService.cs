@@ -20,7 +20,7 @@ public class PersonService : IPersonService
 
         var existingEmail = await _repository.GetPersonByEmailAndActiveAsync(person.Email);
 
-        if (existingEmail != null)
+        if (existingEmail is not null)
             throw new InvalidOperationException("Email already in use.");
 
         var createdId = await _repository.CreatePersonAsync(person);
@@ -50,7 +50,7 @@ public class PersonService : IPersonService
 
         var existing = await GetActivePersonByIdAsync(id);
 
-        if (existing == null) return false;
+        if (existing is null) return false;
 
         var existingEmail = await _repository.GetPersonByEmailAndActiveAsync(updatedPerson.Email);
 
@@ -64,7 +64,7 @@ public class PersonService : IPersonService
     public async Task<bool> DeletePersonAsync(int id)
     {
         var existing = await GetActivePersonByIdAsync(id);
-        if (existing == null) return false;
+        if (existing is null) return false;
 
         await _repository.DeletePersonAsync(id);
         return true;
@@ -74,7 +74,7 @@ public class PersonService : IPersonService
     {
         var person = await _repository.GetPersonByIdAsync(id);
 
-        if (person == null || !person.Active) return null;
+        if (person is null || !person.Active) return null;
 
         return person;
     }
