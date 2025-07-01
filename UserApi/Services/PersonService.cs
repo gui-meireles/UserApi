@@ -34,11 +34,14 @@ public class PersonService : IPersonService
         return existing?.ToPersonResponse();
     }
 
-    public async Task<IEnumerable<PersonResponse>> GetAllPeopleAsync()
+    public async Task<List<PersonResponse>> GetAllPeopleAsync()
     {
-        var people = await _repository.GetAllPersonActiveAsync();
-        var activePeople = people.Where(p => p.Active);
-        return activePeople.Select(p => p.ToPersonResponse());
+        var people = await _repository.GetAllPeopleAsync();
+        
+        return people
+            .Where(p => p.Active)
+            .Select(person => person.ToPersonResponse())
+            .ToList();
     }
 
     public async Task<bool> UpdatePersonAsync(int id, PersonUpdateRequest request)

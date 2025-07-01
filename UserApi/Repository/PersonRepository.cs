@@ -43,7 +43,7 @@ public class PersonRepository : IPersonRepository
         await connection.ExecuteAsync("UPDATE person SET active = FALSE WHERE id = @id", new { id });
     }
 
-    public async Task<IEnumerable<Person>> GetAllPersonActiveAsync()
+    public async Task<IEnumerable<Person>> GetAllPeopleAsync()
     {
         await using var connection = GetConnection();
         return await connection.QueryAsync<Person>("SELECT * FROM person");
