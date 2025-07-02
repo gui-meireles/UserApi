@@ -1,19 +1,21 @@
 ﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using UserApi.Data;
 using UserApi.Models;
 
 namespace UserApi.Repository;
 
 public class PersonRepository : IPersonRepository
 {
+    private readonly PersonContext _context;
+    
     private readonly string _connectionString;
 
-    private readonly IConfiguration _config;
-
-    public PersonRepository(IConfiguration config)
+    public PersonRepository(IConfiguration config, PersonContext context)
     {
-        _config = config;
-        _connectionString = _config.GetConnectionString("default");
+        _connectionString = config.GetConnectionString("default");
+        _context = context;
     }
 
     private NpgsqlConnection GetConnection() => new NpgsqlConnection(_connectionString);
@@ -59,19 +61,9 @@ public class PersonRepository : IPersonRepository
 
     public async Task<Person> GetPersonByIdAsync(int id)
     {
-        await using var connection = GetConnection();
-        return await connection.QueryFirstOrDefaultAsync<Person>(
-            @"
-    SELECT 
-        id,
-        name,
-        email,
-        created_at AS CreatedAt,
-        active
-    FROM person
-    WHERE id = @id
-",
-            new { id });
+        return await _context.People
+            .AsNoTracking()  // Caso utilize o objeto retornado para atualizá-lo, remova essa linha
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public async Task<Person> GetPersonByEmailAndActiveAsync(string email)

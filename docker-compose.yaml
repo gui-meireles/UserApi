@@ -25,7 +25,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__default=Host=postgres;Port=5432;Database=persondb;Username=postgres;Password=postgrespw
     ports:
-      - "8080:8080"
+      - "8082:8080"
     restart: always
 
 volumes:

@@ -6,11 +6,10 @@ namespace UserApi.Mappers;
 
 public static class PersonMapper
 {
-    public static Person ToUpdate(this Person person, PersonUpdateRequest personUpdateRequest)
+    public static void ToUpdate(this Person person, PersonUpdateRequest personUpdateRequest)
     {
         person.Name = personUpdateRequest.Name;
         person.Email = personUpdateRequest.Email;
-        return person;
     }
 
     public static Person ToPerson(this PersonCreateRequest personCreateRequest)

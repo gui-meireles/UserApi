@@ -8,14 +8,18 @@ namespace UserApi.Services;
 public class PersonService : IPersonService
 {
     private readonly IPersonRepository _repository;
+    
+    private readonly ILogger<PersonService> _logger;
 
-    public PersonService(IPersonRepository repository)
+    public PersonService(IPersonRepository repository, ILogger<PersonService> logger)
     {
         _repository = repository;
+        _logger = logger;
     }
 
     public async Task<int> CreatePersonAsync(PersonCreateRequest request)
     {
+        _logger.LogInformation("Iniciando criação da pessoa com email: {Email}", request.Email);
         var person = request.ToPerson();
 
         var existingEmail = await _repository.GetPersonByEmailAndActiveAsync(person.Email);
@@ -24,6 +28,7 @@ public class PersonService : IPersonService
             throw new InvalidOperationException("Email already in use.");
 
         var createdId = await _repository.CreatePersonAsync(person);
+        _logger.LogInformation("Pessoa criada com ID: {Id} e Email: {Email}", createdId,  person.Email);
         return createdId;
     }
 
@@ -55,7 +60,9 @@ public class PersonService : IPersonService
         if (personWithTheSameEmail is not null && personWithTheSameEmail.Id != id)
             throw new InvalidOperationException("Email already in use.");
 
-        await _repository.UpdatePersonAsync(personPersisted.ToUpdate(request));
+        personPersisted.ToUpdate(request);
+        
+        await _repository.UpdatePersonAsync(personPersisted);
         return true;
     }
 
