@@ -15,7 +15,7 @@ public class PersonRepository : IPersonRepository
         _config = config;
         _connectionString = _config.GetConnectionString("default");
     }
-    
+
     private NpgsqlConnection GetConnection() => new NpgsqlConnection(_connectionString);
 
     public async Task<int> CreatePersonAsync(Person person)
@@ -46,14 +46,32 @@ public class PersonRepository : IPersonRepository
     public async Task<IEnumerable<Person>> GetAllPeopleAsync()
     {
         await using var connection = GetConnection();
-        return await connection.QueryAsync<Person>("SELECT * FROM person");
+        return await connection.QueryAsync<Person>(@"
+    SELECT 
+        id,
+        name,
+        email,
+        created_at AS CreatedAt,
+        active
+    FROM person"
+        );
     }
 
     public async Task<Person> GetPersonByIdAsync(int id)
     {
         await using var connection = GetConnection();
         return await connection.QueryFirstOrDefaultAsync<Person>(
-            "SELECT * FROM person WHERE id = @id", new { id });
+            @"
+    SELECT 
+        id,
+        name,
+        email,
+        created_at AS CreatedAt,
+        active
+    FROM person
+    WHERE id = @id
+",
+            new { id });
     }
 
     public async Task<Person> GetPersonByEmailAndActiveAsync(string email)

@@ -1,10 +1,18 @@
-﻿using UserApi.Models;
+﻿using System.Runtime.InteropServices;
+using UserApi.Models;
 using UserApi.Models.DTO;
 
 namespace UserApi.Mappers;
 
 public static class PersonMapper
 {
+    public static Person ToUpdate(this Person person, PersonUpdateRequest personUpdateRequest)
+    {
+        person.Name = personUpdateRequest.Name;
+        person.Email = personUpdateRequest.Email;
+        return person;
+    }
+
     public static Person ToPerson(this PersonCreateRequest personCreateRequest)
     {
         return new Person
@@ -13,24 +21,24 @@ public static class PersonMapper
             Email = personCreateRequest.Email
         };
     }
-    
-    public static Person ToPerson(this PersonUpdateRequest personUpdateRequest, int id)
-    {
-        return new Person
-        {
-            Id = id,
-            Name = personUpdateRequest.Name,
-            Email = personUpdateRequest.Email
-        };
-    }
-    
+
     public static PersonResponse ToPersonResponse(this Person person)
     {
+        var timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? "E. South America Standard Time"
+            : "America/Sao_Paulo";
+
+        var brazilTime = TimeZoneInfo.ConvertTimeFromUtc(
+            person.CreatedAt,
+            TimeZoneInfo.FindSystemTimeZoneById(timeZoneId)
+        );
+
         return new PersonResponse
         {
             Id = person.Id,
             Name = person.Name,
-            Email = person.Email
+            Email = person.Email,
+            CreatedAt = brazilTime.ToString("dd-MM-yyyy HH:mm:ss")
         };
     }
 }

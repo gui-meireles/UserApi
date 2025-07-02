@@ -29,16 +29,16 @@ public class PersonService : IPersonService
 
     public async Task<PersonResponse> GetPersonByIdAsync(int id)
     {
-        var existing = await GetActivePersonByIdAsync(id);
+        var personPersisted = await GetActivePersonByIdAsync(id);
 
-        return existing?.ToPersonResponse();
+        return personPersisted?.ToPersonResponse();
     }
 
     public async Task<List<PersonResponse>> GetAllPeopleAsync()
     {
-        var people = await _repository.GetAllPeopleAsync();
+        var peoplePersisted = await _repository.GetAllPeopleAsync();
         
-        return people
+        return peoplePersisted
             .Where(p => p.Active)
             .Select(person => person.ToPersonResponse())
             .ToList();
@@ -46,25 +46,23 @@ public class PersonService : IPersonService
 
     public async Task<bool> UpdatePersonAsync(int id, PersonUpdateRequest request)
     {
-        var updatedPerson = request.ToPerson(id);
+        var personPersisted = await GetActivePersonByIdAsync(id);
 
-        var existing = await GetActivePersonByIdAsync(id);
+        if (personPersisted is null) return false;
 
-        if (existing is null) return false;
+        var personWithTheSameEmail = await _repository.GetPersonByEmailAndActiveAsync(request.Email);
 
-        var existingEmail = await _repository.GetPersonByEmailAndActiveAsync(updatedPerson.Email);
-
-        if (existingEmail != null && existingEmail.Id != updatedPerson.Id)
+        if (personWithTheSameEmail is not null && personWithTheSameEmail.Id != id)
             throw new InvalidOperationException("Email already in use.");
 
-        await _repository.UpdatePersonAsync(updatedPerson);
+        await _repository.UpdatePersonAsync(personPersisted.ToUpdate(request));
         return true;
     }
 
     public async Task<bool> DeletePersonAsync(int id)
     {
-        var existing = await GetActivePersonByIdAsync(id);
-        if (existing is null) return false;
+        var personPersisted = await GetActivePersonByIdAsync(id);
+        if (personPersisted is null) return false;
 
         await _repository.DeletePersonAsync(id);
         return true;
@@ -72,10 +70,10 @@ public class PersonService : IPersonService
 
     private async Task<Person> GetActivePersonByIdAsync(int id)
     {
-        var person = await _repository.GetPersonByIdAsync(id);
+        var personPersisted = await _repository.GetPersonByIdAsync(id);
 
-        if (person is null || !person.Active) return null;
+        if (personPersisted is null || !personPersisted.Active) return null;
 
-        return person;
+        return personPersisted;
     }
 }

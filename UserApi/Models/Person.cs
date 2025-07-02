@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UserApi.Models;
 
 [Table("person")]
 public class Person
 {
-    [Key]
+
     [Column("id")]
     public int Id { get; set; }
 
