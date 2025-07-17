@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddKeycloakWebApiAuthentication(builder.Configuration);
 
 // AddJsonOptions() é necessário para converter o enum do Product de número para texto
 builder.Services.AddControllers()
@@ -20,7 +20,32 @@ builder.Services.AddControllers()
     });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(c =>
+    {
+        var securityScheme = new OpenApiSecurityScheme
+        {
+            Name = "Keycloak",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.OpenIdConnect,
+            OpenIdConnectUrl =
+                new Uri(
+                    $"{builder.Configuration["Keycloak:auth-server-url"]}realms/{builder.Configuration["Keycloak:realm"]}/.well-known/openid-configuration"),
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            Reference = new OpenApiReference
+            {
+                Id = "Bearer",
+                Type = ReferenceType.SecurityScheme
+            }
+        };
+        c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            { securityScheme, Array.Empty<string>() }
+        });
+    }
+);
 
 builder.Services.AddDbContext<PersonContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("default")));

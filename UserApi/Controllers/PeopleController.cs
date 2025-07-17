@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using UserApi.Models.DTO;
 using UserApi.Services;
 
@@ -6,6 +7,7 @@ namespace UserApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class PeopleController : ControllerBase
 {
     private readonly IPersonService _personService;
